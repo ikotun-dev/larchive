@@ -42,5 +42,32 @@ const addNewLink = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         res.json({ "message": "link added succeefully" }).status(201);
     });
 });
+const fetchUserLinks = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const token = req.headers.authorization.split(' ')[1];
+    console.log(token);
+    if (!token) {
+        res.json({ "message": "unauthorized" }).status(401);
+    }
+    let decodedToken;
+    try {
+        decodedToken = jsonwebtoken_1.default.verify(token, "collins");
+    }
+    catch (err) {
+        console.log(err.message);
+    }
+    var fetchUserLinksQuery = `SELECT * FROM links WHERE user_id = ( ? )`;
+    db_1.default.all(fetchUserLinksQuery, [decodedToken.userId], (fetchErr, links) => {
+        if (fetchErr) {
+            console.log(fetchErr.message);
+        }
+        {
+            const linkUrls = links.map((link) => ({ id: link.id, url: link.url }));
+            return res.json({ "data": linkUrls }).status(200);
+        }
+    });
+});
+const DeleteSingleLinks = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+});
+linkRouter.get("/", fetchUserLinks);
 linkRouter.post("/", addNewLink);
 exports.default = linkRouter;

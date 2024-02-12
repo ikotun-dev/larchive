@@ -2,9 +2,7 @@ import { Request, Response, Router } from "express";
 import { Md5 } from 'ts-md5'
 import jwt from 'jsonwebtoken'
 import db from "../models/db";
-import dotenv from "dotenv"
 
-import process from "process";
 const userRouter = Router()
 
 var insertUserQuery = `INSERT into users (username, password) VALUES (?, ?)`

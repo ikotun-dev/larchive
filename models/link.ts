@@ -8,7 +8,7 @@ export const createLinkTable = () => {
     user_id INTEGER,
     FOREIGN KEY (user_id) REFERENCES users(id)
 
-)`, (error) => {
+)`, (error: any) => {
     if (error) {
       console.log("Link Table already created")
 
