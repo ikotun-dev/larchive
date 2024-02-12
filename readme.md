@@ -1,5 +1,5 @@
 ### Larchive
-### Tools
-> Typescript, SQLite 
-> raw sql queries, no ORM. 
+### What did I use? 
+> Typescript, SQLite, 
+> raw sql queries, no ORM 😏. 
 
