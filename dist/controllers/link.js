@@ -43,7 +43,13 @@ const addNewLink = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     });
 });
 const fetchUserLinks = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const token = req.headers.authorization.split(' ')[1];
+    let token;
+    try {
+        token = req.headers.authorization.split(' ')[1];
+    }
+    catch (e) {
+        return res.json({ "error": e.message }).status(400);
+    }
     console.log(token);
     if (!token) {
         res.json({ "message": "unauthorized" }).status(401);
@@ -67,7 +73,39 @@ const fetchUserLinks = (req, res) => __awaiter(void 0, void 0, void 0, function*
     });
 });
 const DeleteSingleLinks = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const token = req.headers.authorization.split(' ')[1];
+    const linkId = req.body.linkId;
+    if (!token) {
+        res.json({ "message": "unauthorized" }).status(401);
+    }
+    let decodedToken;
+    try {
+        decodedToken = jsonwebtoken_1.default.verify(token, "collins");
+    }
+    catch (err) {
+        console.log(err.message);
+    }
+    var deleteLinkQuery = `DELETE FROM links WHERE id = ( ? )`;
+    var checkIfLinkExistQuery = `SELECT * FROM links WHERE id = ( ? )`;
+    db_1.default.get(checkIfLinkExistQuery, [linkId], (error, existingLink) => {
+        console.log("checkIfLinkExistQuery...");
+        if (error) {
+            console.log(error.message);
+            return res.json({ "error": error.message }).status(404);
+        }
+        if (!existingLink) {
+            return res.json({ "message": "Link not found." }).status(404);
+        }
+        db_1.default.run(deleteLinkQuery, [linkId], (error) => {
+            if (error) {
+                console.log(error.message);
+                return res.json({ "message": "link not found" }).status(404);
+            }
+            return res.json({ "message": "link deleted succeefully" }).status(200);
+        });
+    });
 });
+linkRouter.delete("/", DeleteSingleLinks);
 linkRouter.get("/", fetchUserLinks);
 linkRouter.post("/", addNewLink);
 exports.default = linkRouter;
