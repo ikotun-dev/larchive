@@ -27,7 +27,18 @@ const addNewLink = async (req: Request, res: Response) => {
     if (insertErr) {
       console.log(insertErr)
     }
-    res.json({ "message": "link added succeefully" }).status(201)
+    var fetchUserLinksQuery = `SELECT * FROM links WHERE user_id = ( ? )`
+    db.all(fetchUserLinksQuery, [decodedToken.userId], (fetchErr, links: any) => {
+      if (fetchErr) {
+        console.log(fetchErr.message)
+      } {
+        const linkUrls = links.map((link: any) => ({ id: link.id, url: link.url, date: link.createdAt }))
+
+        console.log(linkUrls)
+        return res.json({ "data": linkUrls, "statusCode": 201 }).status(200)
+      }
+    })
+    // res.json({ "message": "link added succeefully" }).status(201)
   })
 }
 
@@ -35,7 +46,7 @@ const fetchUserLinks = async (req: Request, res: Response) => {
   let token;
   try {
     token = req.headers.authorization!.split(' ')[1]
-  } catch (e) {
+  } catch (e: any) {
     return res.json({ "error": e.message }).status(400)
   }
   console.log(token)
@@ -46,6 +57,7 @@ const fetchUserLinks = async (req: Request, res: Response) => {
   let decodedToken: any;
   try {
     decodedToken = jwt.verify(token, "collins")
+    console.log(decodedToken)
   } catch (err: any) {
     console.log(err.message)
   }
@@ -54,8 +66,10 @@ const fetchUserLinks = async (req: Request, res: Response) => {
     if (fetchErr) {
       console.log(fetchErr.message)
     } {
-      const linkUrls = links.map((link: any) => ({ id: link.id, url: link.url }))
-      return res.json({ "data": linkUrls }).status(200)
+      const linkUrls = links.map((link: any) => ({ id: link.id, url: link.url, date: link.createdAt }))
+
+      console.log(linkUrls)
+      return res.json({ "data": linkUrls, "statusCode": 200 }).status(200)
     }
   })
 
@@ -86,10 +100,22 @@ const DeleteSingleLinks = async (req: Request, res: Response) => {
       return res.json({ "message": "Link not found." }).status(404)
     }
     db.run(deleteLinkQuery, [linkId], (error) => {
+
       if (error) {
         console.log(error.message)
         return res.json({ "message": "link not found" }).status(404)
-      } return res.json({ "message": "link deleted succeefully" }).status(200)
+      }
+      var fetchUserLinksQuery = `SELECT * FROM links WHERE user_id = ( ? )`
+      db.all(fetchUserLinksQuery, [decodedToken.userId], (fetchErr, links: any) => {
+        if (fetchErr) {
+          console.log(fetchErr.message)
+        } {
+          const linkUrls = links.map((link: any) => ({ id: link.id, url: link.url, date: link.createdAt }))
+
+          console.log(linkUrls)
+          return res.json({ "data": linkUrls, "message": "link deleted successfully", "statusCode": 200, }).status(200)
+        }
+      })
     })
   })
 }

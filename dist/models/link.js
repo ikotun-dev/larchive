@@ -10,10 +10,12 @@ const createLinkTable = () => {
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     url VARCHAR(8000),
     user_id INTEGER,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)
 
 )`, (error) => {
         if (error) {
+            console.log(error.message);
             console.log("Link Table already created");
         }
         else {

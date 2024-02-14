@@ -21,6 +21,7 @@ var insertUserQuery = `INSERT into users (username, password) VALUES (?, ?)`;
 var checkExistingUsernameQuery = `SELECT * FROM users WHERE username = ?`;
 const createNewUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
+    console.log("entered");
     console.log(req.body);
     const username = (_a = req.body) === null || _a === void 0 ? void 0 : _a.username;
     const password = (_b = req.body) === null || _b === void 0 ? void 0 : _b.password;
@@ -36,7 +37,7 @@ const createNewUser = (req, res) => __awaiter(void 0, void 0, void 0, function* 
                 res.json({ "message": "Internal Server Error" }).status(500);
             }
             if (existingUser) {
-                res.json({ "message": "User with this username already exists" }).status(400);
+                res.json({ "message": "User with this username already exists", "statusCode": 401 }).status(400);
             }
             else {
                 db_1.default.run(insertUserQuery, [username, hashedPassword], (insertErr) => {
@@ -44,7 +45,7 @@ const createNewUser = (req, res) => __awaiter(void 0, void 0, void 0, function* 
                         console.error(insertErr.message);
                     }
                     console.log(`User ${username} created successfully`);
-                    return res.json({ "message": "User created successfully" }).status(201);
+                    return res.json({ "message": "User created successfully", "statusCode": 201 }).status(201);
                 });
             }
         });
@@ -52,15 +53,18 @@ const createNewUser = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 });
 const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _c, _d;
+    console.log("entered..login");
     const username = (_c = req.body) === null || _c === void 0 ? void 0 : _c.username;
     const password = (_d = req.body) === null || _d === void 0 ? void 0 : _d.password;
     if (!username || !password) {
         res.json({ "message": "Invalid Request" }).status(400);
     }
+    console.log("Right before db stuff");
     db_1.default.get(checkExistingUsernameQuery, [username], (err, existingUser) => {
-        if (err) {
-            console.error(err.message);
-            res.json({ 'message': "Invalid username" }).status(500);
+        console.log(`${err} , ${existingUser}`);
+        if (err == null && !existingUser) {
+            console.log("....");
+            res.json({ 'message': "Invalid username", "statusCode": 404 }).status(404);
         }
         if (existingUser) {
             const hashedPassword = ts_md5_1.Md5.hashStr(password);
@@ -71,12 +75,12 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                     console.error(validateQueryErr.message);
                 }
                 if (!user) {
-                    res.json({ "message": "user does not exist" });
+                    res.json({ "message": "user does not exist", "statusCode": 401 });
                 }
                 const { id, username } = user;
-                const accessToken = jsonwebtoken_1.default.sign({ userId: id }, "collins", { expiresIn: "1h" });
+                const accessToken = jsonwebtoken_1.default.sign({ userId: id }, "collins", { expiresIn: "1d" });
                 console.log(`${username} logged in successfully`);
-                return res.json({ "message": "login succesful", "accessToken": `${accessToken}` }).status(200);
+                res.status(200).json({ "message": "login succesful", "accessToken": `${accessToken}`, "statusCode": 200 });
             });
         }
     });

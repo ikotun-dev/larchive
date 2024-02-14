@@ -8,6 +8,7 @@ const userRouter = Router()
 var insertUserQuery = `INSERT into users (username, password) VALUES (?, ?)`
 var checkExistingUsernameQuery = `SELECT * FROM users WHERE username = ?`
 const createNewUser = async (req: Request, res: Response) => {
+  console.log("entered")
   console.log(req.body)
   const username = req.body?.username
   const password = req.body?.password
@@ -21,7 +22,7 @@ const createNewUser = async (req: Request, res: Response) => {
         console.error(err)
         res.json({ "message": "Internal Server Error" }).status(500)
       } if (existingUser) {
-        res.json({ "message": "User with this username already exists" }).status(400)
+        res.json({ "message": "User with this username already exists", "statusCode": 401 }).status(400)
       } else {
         db.run(insertUserQuery, [username, hashedPassword], (insertErr) => {
           if (insertErr) {
@@ -29,7 +30,7 @@ const createNewUser = async (req: Request, res: Response) => {
             )
           }
           console.log(`User ${username} created successfully`)
-          return res.json({ "message": "User created successfully" }).status(201)
+          return res.json({ "message": "User created successfully", "statusCode": 201 }).status(201)
         })
       }
     })
@@ -38,16 +39,21 @@ const createNewUser = async (req: Request, res: Response) => {
 }
 
 const login = async (req: Request, res: Response) => {
+  console.log("entered..login")
   const username = req.body?.username
   const password = req.body?.password
   if (!username || !password) {
     res.json({ "message": "Invalid Request" }).status(400)
   }
+  console.log("Right before db stuff")
   db.get(checkExistingUsernameQuery, [username], (err, existingUser) => {
-    if (err) {
-      console.error(err.message)
-      res.json({ 'message': "Invalid username" }).status(500)
-    } if (existingUser) {
+    console.log(`${err} , ${existingUser}`)
+
+    if (err == null && !existingUser) {
+      console.log("....")
+      res.json({ 'message': "Invalid username", "statusCode": 404 }).status(404)
+    }
+    if (existingUser) {
       const hashedPassword = Md5.hashStr(password)
       const validateUserQuery = `SELECT * FROM users WHERE username = ? AND password = ?`
       console.log(hashedPassword)
@@ -55,12 +61,12 @@ const login = async (req: Request, res: Response) => {
         if (validateQueryErr) {
           console.error(validateQueryErr.message)
         } if (!user) {
-          res.json({ "message": "user does not exist" })
+          res.json({ "message": "user does not exist", "statusCode": 401 })
         }
         const { id, username } = user
-        const accessToken = jwt.sign({ userId: id }, "collins", { expiresIn: "1h" })
+        const accessToken = jwt.sign({ userId: id }, "collins", { expiresIn: "1d" })
         console.log(`${username} logged in successfully`)
-        return res.json({ "message": "login succesful", "accessToken": `${accessToken}` }).status(200)
+        res.status(200).json({ "message": "login succesful", "accessToken": `${accessToken}`, "statusCode": 200 })
       })
     }
   })

@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const db_1 = __importDefault(require("./models/db"));
+const cors_1 = __importDefault(require("cors"));
 const user_1 = require("./models/user");
 const user_2 = __importDefault(require("./controllers/user"));
 const link_1 = require("./models/link");
@@ -23,11 +24,13 @@ const app = (0, express_1.default)();
 const port = 3000;
 (0, user_1.createUserTable)();
 (0, link_1.createLinkTable)();
+const allowedOrigins = ['http://localhost:8080', 'http://127.0.0.1:8080'];
 db_1.default.serialize();
+app.use((0, cors_1.default)({ origin: allowedOrigins, optionsSuccessStatus: 200, credentials: true }));
 app.use(express_1.default.json());
 app.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.json({ "message": "api works." });
 }));
 app.use("/auth", user_2.default);
 app.use("/link", link_2.default);
-app.listen(port, () => { console.log("running"); });
+app.listen(port, () => { console.log(`running on port : ${port}`); });
