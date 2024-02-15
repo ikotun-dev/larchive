@@ -1,6 +1,5 @@
 
 
-# Dockerfile
 
 FROM node:16-alpine
 
@@ -15,7 +14,6 @@ RUN apk add --no-cache \
 
 RUN npm ci --production
 
-# Add SQLite database file to the image
 COPY dist dist/
 VOLUME /data
 EXPOSE 3000
