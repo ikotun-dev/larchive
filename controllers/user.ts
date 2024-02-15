@@ -46,6 +46,7 @@ const login = async (req: Request, res: Response) => {
     res.json({ "message": "Invalid Request" }).status(400)
   }
   console.log("Right before db stuff")
+  console.log(`${username}, ${password}`)
   db.get(checkExistingUsernameQuery, [username], (err, existingUser) => {
     console.log(`${err} , ${existingUser}`)
 

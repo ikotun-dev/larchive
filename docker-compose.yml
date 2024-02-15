@@ -1,0 +1,20 @@
+
+version: '3'
+services:
+  app:
+    image: node:14-alpine
+    working_dir: /usr/src/app
+    volumes:
+      - ./app:/usr/src/app
+    environment:
+      - DB_PATH=/data/db.sqlite  # Update this path based on your configuration
+    command: sh -c "npm install && npm run start"
+    ports:
+      - "3000:3000"
+
+  db:
+    image: alpine
+    volumes:
+      - ./data:/data
+    command: sh -c "touch /data/db.sqlite && tail -f /dev/null"
+

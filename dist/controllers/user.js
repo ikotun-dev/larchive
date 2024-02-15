@@ -60,6 +60,7 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.json({ "message": "Invalid Request" }).status(400);
     }
     console.log("Right before db stuff");
+    console.log(`${username}, ${password}`);
     db_1.default.get(checkExistingUsernameQuery, [username], (err, existingUser) => {
         console.log(`${err} , ${existingUser}`);
         if (err == null && !existingUser) {
