@@ -87,7 +87,7 @@ const fetchUserLinks = (req, res) => __awaiter(void 0, void 0, void 0, function*
 });
 const DeleteSingleLinks = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const token = req.headers.authorization.split(' ')[1];
-    const linkId = req.body.linkId;
+    const linkId = req.query.id;
     if (!token) {
         res.json({ "message": "unauthorized" }).status(401);
     }

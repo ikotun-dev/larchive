@@ -24,9 +24,10 @@ const app = (0, express_1.default)();
 const port = 3000;
 (0, user_1.createUserTable)();
 (0, link_1.createLinkTable)();
-const allowedOrigins = ['http://localhost:8080', 'http://127.0.0.1:8080'];
+const allowedOrigins = ['http://localhost:8080', 'http://127.0.0.1:8080', 'https://larchive-app.vercel.app'];
 db_1.default.serialize();
-app.use((0, cors_1.default)({ origin: allowedOrigins, optionsSuccessStatus: 200, credentials: true }));
+//app.use(cors({ origin: "*", optionsSuccessStatus: 200, credentials: true }))
+app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.json({ "message": "api works." });

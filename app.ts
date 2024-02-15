@@ -11,10 +11,11 @@ const port = 3000
 
 createUserTable();
 createLinkTable();
-const allowedOrigins = ['http://localhost:8080', 'http://127.0.0.1:8080']
+const allowedOrigins = ['http://localhost:8080', 'http://127.0.0.1:8080', 'https://larchive-app.vercel.app']
 
 db.serialize();
-app.use(cors({ origin: allowedOrigins, optionsSuccessStatus: 200, credentials: true }))
+//app.use(cors({ origin: "*", optionsSuccessStatus: 200, credentials: true }))
+app.use(cors());
 app.use(express.json())
 
 app.get("/", async (req, res) => {

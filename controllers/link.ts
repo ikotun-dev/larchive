@@ -77,7 +77,7 @@ const fetchUserLinks = async (req: Request, res: Response) => {
 
 const DeleteSingleLinks = async (req: Request, res: Response) => {
   const token = req.headers.authorization!.split(' ')[1]
-  const linkId = req.body!.linkId
+  const linkId = req.query.id
   if (!token) {
     res.json({ "message": "unauthorized" }).status(401)
   }
