@@ -83,7 +83,7 @@ const login = async (req: Request, res: Response) => {
     }
   })
 }
-userRouter.get("", getAllUsers)
+userRouter.get("/all", getAllUsers)
 userRouter.post("/signup", createNewUser)
 userRouter.post("/login", login)
 

@@ -51,6 +51,15 @@ const createNewUser = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         });
     }
 });
+const getAllUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    db_1.default.all('SELECT * FROM users', (error, users) => {
+        if (error) {
+            return res.status(400).json({ error: error.message });
+        }
+        const userList = users;
+        return res.status(200).json({ data: userList });
+    });
+});
 const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _c, _d;
     console.log("entered..login");
@@ -86,6 +95,7 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
     });
 });
+userRouter.get("/all", getAllUsers);
 userRouter.post("/signup", createNewUser);
 userRouter.post("/login", login);
 exports.default = userRouter;
