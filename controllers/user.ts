@@ -2,6 +2,7 @@ import { Request, Response, Router } from "express";
 import { Md5 } from 'ts-md5'
 import jwt from 'jsonwebtoken'
 import db from "../models/db";
+import { error } from "console";
 
 const userRouter = Router()
 
@@ -38,6 +39,16 @@ const createNewUser = async (req: Request, res: Response) => {
   }
 }
 
+const getAllUsers = async (req: Request, res: Response) => {
+  db.all('SELECT * FROM users', (error, users: any) => {
+    if (error) {
+      return res.status(400).json({ error: error.message })
+    }
+    const userList = users
+    return res.status(200).json({ data: userList })
+
+  })
+}
 const login = async (req: Request, res: Response) => {
   console.log("entered..login")
   const username = req.body?.username
@@ -72,7 +83,7 @@ const login = async (req: Request, res: Response) => {
     }
   })
 }
-
+userRouter.get("", getAllUsers)
 userRouter.post("/signup", createNewUser)
 userRouter.post("/login", login)
 
